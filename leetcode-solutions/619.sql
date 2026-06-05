@@ -7,6 +7,6 @@ SELECT MAX(num) as num
 FROM(
     SELECT NUM
     FROM MyNumbers
-    GROUP BY 1
-    HAVING COUNT(1) = 1
+    GROUP BY num
+    HAVING COUNT(*) = 1
 ) AS t;
