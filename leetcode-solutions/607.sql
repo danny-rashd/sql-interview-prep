@@ -1,7 +1,7 @@
 /*
 Sales Person
 Write a solution to find the names of all the salespersons who did not have any orders related to the company with the name "RED".
-/*
+*/
 SELECT s.name
 FROM SalesPerson s
 WHERE s.sales_id NOT IN (
