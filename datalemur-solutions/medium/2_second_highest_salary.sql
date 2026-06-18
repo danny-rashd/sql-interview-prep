@@ -25,6 +25,15 @@ The output represents the second highest salary among all employees. In this cas
 
 The dataset you are querying against may have different input & output - this is just an example!
 */
+-- IDEAL WAY --
+SELECT MAX(salary) as second_highest_salary
+FROM employee
+WHERE salary < (
+    SELECT MAX(salary)
+    FROM employee
+);
+
+-- CTE WAY --
 WITH highest_salary AS (
     SELECT MAX(salary) AS max_salary
     FROM employee
@@ -33,3 +42,14 @@ SELECT MAX(salary) AS second_highest_salary
 FROM employee
 CROSS JOIN highest_salary
 WHERE salary < max_salary;
+
+-- CROSS JOIN CTE --
+WITH highest_salar_cte AS (
+  SELECT MAX(salary) as max_salary
+  FROM employee
+)
+SELECT MAX(salary) as second_highest_salary
+FROM employee
+WHERE salary < (
+  SELECT max_salary FROM highest_salar_cte
+);

@@ -1,36 +1,69 @@
 /* 
-Your team at JPMorgan Chase is preparing to launch a new credit card, and to gain some insights, you're analyzing how many credit cards were issued each month.
+IBM is analyzing how their employees are utilizing the Db2 database by tracking the SQL queries executed by their employees. 
+The objective is to generate data to populate a histogram that shows the number of unique queries run by employees during the third quarter of 2023 (July to September). 
+Additionally, it should count the number of employees who did not run any queries during this period.
 
-Write a query that outputs the name of each credit card and the difference in the number of issued cards 
-between the month with the highest issuance cards and the lowest issuance. Arrange the results based on the largest disparity.
+Display the number of unique queries as histogram categories, along with the count of employees who executed that number of unique queries.
 
-monthly_cards_issued Table:
-Column Name	Type
-card_name	string
-issued_amount	integer
-issue_month	integer
-issue_year	integer
+queries Schema:
 
-monthly_cards_issued Example Input:
-card_name	issued_amount	issue_month	issue_year
-Chase Freedom Flex	55000	1	2021
-Chase Freedom Flex	60000	2	2021
-Chase Freedom Flex	65000	3	2021
-Chase Freedom Flex	70000	4	2021
-Chase Sapphire Reserve	170000	1	2021
-Chase Sapphire Reserve	175000	2	2021
-Chase Sapphire Reserve	180000	3	2021
+Column Name	Type	Description
+employee_id	integer	The ID of the employee who executed the query.
+query_id	integer	The unique identifier for each query (Primary Key).
+query_starttime	datetime	The timestamp when the query started.
+execution_time	integer	The duration of the query execution in seconds.
+queries Example Input:
 
+Assume that the table below displays all queries made from July 1, 2023 to 31 July, 2023:
+
+employee_id	query_id	query_starttime	execution_time
+226	856987	07/01/2023 01:04:43	2698
+132	286115	07/01/2023 03:25:12	2705
+221	33683	07/01/2023 04:34:38	91
+240	17745	07/01/2023 14:33:47	2093
+110	413477	07/02/2023 10:55:14	470
+employees Schema:
+
+Assume that the table below displays all employees in the table:
+
+Column Name	Type	Description
+employee_id	integer	The ID of the employee who executed the query.
+full_name	string	The full name of the employee.
+gender	string	The gender of the employee.
+employees Example Input:
+
+employee_id	full_name	gender
+1	Judas Beardon	Male
+2	Lainey Franciotti	Female
+3	Ashbey Strahan	Male
 Example Output:
-card_name	difference
-Chase Freedom Flex	15000
-Chase Sapphire Reserve	10000
 
-Chase Freedom Flex's best month was 70k cards issued and the worst month was 55k cards, so the difference is 15k cards.
-
-Chase Sapphire Reserve’s best month was 180k cards issued and the worst month was 170k cards, so the difference is 10k cards.
+unique_queries	employee_count
+0	191
+1	46
+2	12
+3	1
+The output indicates that 191 employees did not run any queries, 46 employees ran exactly 1 unique queries, 12 employees ran 2 unique queries, and so on.
 */
-SELECT
-    card_name
-    difference
-FROM monthly_cards_issued;
+WITH q3_queries AS (
+    SELECT
+        employee_id,
+        query_id
+    FROM queries
+    WHERE query_starttime >= '2023-07-01'
+    AND query_starttime < '2023-10-01'
+),
+employee_queries AS(
+    SELECT 
+        e.employee_id, 
+        COUNT(q.query_id) AS unique_queries
+    FROM employees e
+    LEFT JOIN q3_queries q
+    ON e.employee_id = q.employee_id
+    GROUP BY e.employee_id
+)
+
+SELECT unique_queries, COUNT(employee_id) AS employee_count
+FROM employee_queries
+GROUP BY unique_queries
+ORDER BY unique_queries;
