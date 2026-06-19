@@ -33,4 +33,20 @@ Explanation:
 Within the "appliance" category, the top two highest-grossing products are "refrigerator" and "washing machine."
 In the "electronics" category, the top two highest-grossing products are "vacuum" and "wireless headset."
 */
-SELECT * FROM product_spend;
+WITH ranked_cte AS (
+  SELECT 
+    category,
+    product,
+    SUM(spend) AS total_spent,
+    RANK() OVER(
+    PARTITION BY category
+    ORDER BY SUM(spend) DESC) AS ranked
+  FROM product_spend
+  WHERE EXTRACT(YEAR FROM transaction_date) = 2022
+  GROUP BY category, product
+)
+
+SELECT category, product, total_spent
+FROM ranked_cte
+WHERE ranked <= 2
+ORDER BY category, ranked;

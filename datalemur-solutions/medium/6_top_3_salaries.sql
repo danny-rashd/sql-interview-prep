@@ -54,4 +54,24 @@ The output displays the high earners in each department.
     In the Data Science department, both Noah Johnson and William Davis earn $6,800, with Noah listed before William due to alphabetical ordering.
 
 */
-SELECT * FROM product_spend;
+WITH ranked_employee AS (
+  SELECT 
+    name,
+    salary,
+    department_id,
+    DENSE_RANK() OVER(
+      PARTITION BY department_id
+      ORDER BY salary DESC) AS ranked
+    FROM employee
+)
+
+
+SELECT 
+  department_name,
+  name,
+  salary
+FROM ranked_employee
+JOIN department
+ON ranked_employee.department_id = department.department_id
+WHERE ranked <= 3
+ORDER BY department_name, SALARY DESC, name;
