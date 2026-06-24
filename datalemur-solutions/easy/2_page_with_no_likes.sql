@@ -30,7 +30,15 @@ page_id
 20701
 
 */
+-- METHOD 1 -- 
 SELECT page_id FROM pages
 EXCEPT
 SELECT page_id FROM page_likes
 ORDER BY page_id;
+
+-- METHOD 2--
+SELECT pages.page_id
+FROM pages
+LEFT JOIN page_likes 
+    ON pages.page_id = page_likes.page_id
+WHERE page_likes.page_id IS NULL;
