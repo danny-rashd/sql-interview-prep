@@ -1,5 +1,5 @@
 -- =============================================================
--- SCAFFOLDING (local testing only — not part of the solution)
+-- GENERATE TABLE
 -- =============================================================
 
 CREATE TABLE IF NOT EXISTS orders
@@ -16,8 +16,15 @@ SELECT i,
        ('2025-01-01'::DATE + (random() * 548)::INTEGER),
        (random() * 500 + 10)::NUMERIC(10, 2)
 FROM generate_series(1, 500000) i
-WHERE NOT EXISTS (SELECT 1 FROM orders LIMIT 1);
+WHERE NOT EXISTS (SELECT 1 FROM orders);
 
 -- =============================================================
--- SOLUTION
+-- RUN EXPLAIN/ANALYZE WITHOUT INDEXING
 -- =============================================================
+EXPLAIN ANALYZE
+SELECT customer_id, COUNT(order_id), SUM(order_amount)
+FROM orders
+WHERE order_date >= '2026-01-01' AND order_date < '2026-04-01'
+GROUP BY customer_id
+HAVING COUNT(order_id) > 5
+ORDER BY SUM(order_amount) DESC;

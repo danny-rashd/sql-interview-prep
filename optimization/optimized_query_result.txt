@@ -1,0 +1,14 @@
+Sort  (cost=6231.90..6232.73 rows=334 width=44) (actual time=42.294..42.326 rows=1001 loops=1)
+  Sort Key: (sum(order_amount)) DESC
+  Sort Method: quicksort  Memory: 79kB
+  ->  HashAggregate  (cost=6202.88..6217.90 rows=334 width=44) (actual time=41.925..42.088 rows=1001 loops=1)
+        Group Key: customer_id
+        Filter: (count(order_id) > 5)
+        Batches: 1  Memory Usage: 577kB
+        ->  Bitmap Heap Scan on orders  (cost=1148.18..5579.65 rows=83098 width=14) (actual time=3.574..28.643 rows=82152 loops=1)
+              Recheck Cond: ((order_date >= '2026-01-01'::date) AND (order_date < '2026-04-01'::date))
+              Heap Blocks: exact=3185
+              ->  Bitmap Index Scan on idx_orders_order_date  (cost=0.00..1127.40 rows=83098 width=0) (actual time=3.312..3.312 rows=82152 loops=1)
+                    Index Cond: ((order_date >= '2026-01-01'::date) AND (order_date < '2026-04-01'::date))
+Planning Time: 0.446 ms
+Execution Time: 42.411 ms

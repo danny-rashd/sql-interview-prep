@@ -1,0 +1,21 @@
+Sort  (cost=7186.42..7186.59 rows=67 width=44) (actual time=87.379..87.488 rows=1001 loops=1)
+Sort Key: (sum(order_amount)) DESC
+Sort Method: quicksort  Memory: 79kB
+->  Finalize GroupAggregate  (cost=7119.10..7184.39 rows=67 width=44) (actual time=80.042..87.181 rows=1001 loops=1)
+Group Key: customer_id
+Filter: (count(order_id) > 5)
+->  Gather Merge  (cost=7119.10..7177.39 rows=400 width=44) (actual time=80.021..86.284 rows=3003 loops=1)
+Workers Planned: 2
+Workers Launched: 2
+->  Partial GroupAggregate  (cost=6119.07..6131.19 rows=200 width=44) (actual time=67.561..71.516 rows=1001 loops=3)
+Group Key: customer_id
+->  Sort  (cost=6119.07..6121.48 rows=962 width=24) (actual time=67.539..68.932 rows=27384 loops=3)
+Sort Key: customer_id
+Sort Method: quicksort  Memory: 3143kB
+Worker 0:  Sort Method: quicksort  Memory: 1545kB
+Worker 1:  Sort Method: quicksort  Memory: 1594kB
+->  Parallel Seq Scan on orders  (cost=0.00..6071.41 rows=962 width=24) (actual time=0.083..53.952 rows=27384 loops=3)
+Filter: ((order_date >= '2026-01-01'::date) AND (order_date < '2026-04-01'::date))
+Rows Removed by Filter: 139283
+Planning Time: 0.751 ms
+Execution Time: 87.776 ms
